@@ -1,0 +1,211 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define M 10000
+#define N 20
+
+int eisagwghtext(char x[M][N], int a);
+void eisagwghlex(char x[M]);
+void diorthosi(char x[M][N], char y[M][N],char z[M][N]);
+void apothikefsi(char x[M][N], int a);
+void statistika(char x[M][N], int a);
+void epilogh(char x[M][N], char y[M][N], int a);
+
+
+int main()
+{
+    char pinax[M][N];
+    char pinax2[M][N];
+    char pinax3[M][N];
+    int count = 0;
+    epilogh(pinax, pinax2,pinax3, count);
+    return 0;
+}
+
+int eisagwghtext(char x[M][N], int a)
+{
+    FILE *fp;
+    char filename[] = "AlicesAdventuresInWonderland.txt";
+
+    fp = fopen(filename, "r");
+    if (fp == NULL)
+    {
+        printf("Could not open file %s", filename);
+        return 1;
+    }
+
+    while (fgets(x[a], 15, fp) != NULL && a < 10000)
+    {
+        a++;
+    }
+
+    fclose(fp);
+
+    return 0;
+}
+
+
+void eisagwghlex(char x[M]) {
+    FILE *fp;
+    char word[N];
+    int i = 0;
+
+    fp = fopen("Top1000EnglishWords.txt", "r");
+    if (fp == NULL) {
+        printf("Could not open this file.\n");
+        return;
+    }
+
+    while (i < M && fscanf(fp, "%s", word) == 1) {
+    strcpy(x[i], word);
+    i++;
+}
+
+    fclose(fp);
+}
+
+
+
+void diorthosi(char x[M][N], char y[M][N], char z[M][N]) {
+    
+    int x_len = strlen(x[0]);
+    int y_len = strlen(y[0]);
+    int z_len = strlen(z[0]);
+
+    // Επανάληψη για κάθε γράμμα στο κείμενο
+    for (int i = 0; i < x_len; i++) {
+        int found_match = 0;
+
+        // Επανάληψη για κάθε γράμμα στη λέξη
+        for (int j = 0; j < y_len; j++) {
+            if (x[i] == y[j]) {
+                int found_match = 1;
+                break;
+            }
+        }
+
+        // Αν δεν βρέθηκε ταιριαστή λέξη, προσθήκη στην αντικατάσταση
+        if (!found_match) {
+            strncat(z[i], &x[i][0], 1);
+        } else {
+            // Αν βρέθηκε ταιριαστή λέξη, προσθήκη στην αντικατάσταση με μεγάλα γράμματα
+            char upper_case_char = toupper(x[i][0]);
+            strncat(z[i], &upper_case_char, 1);
+        }
+    }
+}
+
+void statistika(char x[M][N], int a)
+{
+    FILE *file = fopen("AlicesAdventuresInWonderland.txt", "w");
+    if (file == NULL)
+    {
+        printf("Error opening file.");
+        return;
+    }
+
+    int num_words = 0, num_chars = 0;
+    int in_word = 0;
+    for (int i = 0; i < a; i++)
+    {
+        for (int j = 0; j < strlen(x[i]); j++)
+        {
+            if (x[i][j] == ' ' || x[i][j] == '\n' || x[i][j] == '\t')
+            {
+                in_word = 0;
+            }
+            else if (!in_word)
+            {
+                in_word = 1;
+                num_words++;
+            }
+            num_chars++;
+        }
+    }
+
+    char words[M][N];
+    int word_counts[M];
+    int num_unique_words = 0;
+    char *word = strtok(x[0], " \n\t");
+    while (word != NULL)
+    {
+        int is_new_word = 1;
+        for (int i = 0; i < num_unique_words; i++)
+        {
+            if (strcmp(words[i], word) == 0)
+            {
+                word_counts[i]++;
+                is_new_word = 0;
+                break;
+            }
+        }
+        if (is_new_word)
+        {
+            strcpy(words[num_unique_words], word);
+            word_counts[num_unique_words] = 1;
+            num_unique_words++;
+        }
+        word = strtok(NULL, " \n\t");
+    }
+
+    fprintf(file, "Arithmos leksewn: %d\n", num_words);
+    fprintf(file, "Arithmos xaraktirwn (excluding whitespace): %d\n", num_chars - num_words + 1);
+    fprintf(file, "Arithmos ksexwristwn leksewn: %d\n", num_unique_words);
+    fprintf(file, "Istogramma:\n");
+    for (int i = 1; i <= N; i++)
+    {
+        int count = 0;
+        for (int j = 0; j < num_unique_words; j++)
+        {
+            if (strlen(words[j]) == i)
+            {
+                count += word_counts[j];
+            }
+        }
+        fprintf(file, "%d: %d\n", i, count);
+    }
+
+    fclose(file);
+}
+
+void epilogh(char x[M][N], char y[M][N],int a)
+{
+    int choice=0;
+    char *lexicon = NULL;
+    printf("1. Eisagwgh keimenou\n");
+    printf("2. Eisagwgh leksilogiou\n");
+    printf("3. Diorthosi keimenou\n");
+    printf("4. Apothikefsi keimenou\n");
+    printf("5. Statistika\n");
+    printf("6. Eksodos\n");
+    printf("Epilekste: ");
+
+    while (choice != 6)
+    {
+        scanf("%d", &choice);
+        if (choice == 1)
+        {
+            eisagwghtext(x, a);
+        }
+        if (choice == 2)
+        {
+            eisagwghlex(x);
+        }
+        if (choice == 3)
+        {
+            diorthosi(x,y,z);
+        }
+        if (choice == 4)
+        {
+            apothikefsi(x, a);
+        }
+        if (choice == 5)
+        {
+            statistika(x, a);
+        }
+        else 
+        {
+            continue;
+        }
+    }
+}
